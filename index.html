@@ -1,0 +1,2822 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IT Support & Asset Management System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #1e40af;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --info-color: #3b82f6;
+            --dark-color: #1f2937;
+            --light-color: #f3f4f6;
+            --white: #ffffff;
+            --border-color: #e5e7eb;
+            --text-primary: #111827;
+            --text-secondary: #6b7280;
+            --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: var(--text-primary);
+        }
+
+        /* Header Styles */
+        .header {
+            background: var(--white);
+            box-shadow: var(--shadow-lg);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo i {
+            font-size: 2rem;
+            color: var(--primary-color);
+        }
+
+        .logo h1 {
+            font-size: 1.5rem;
+            color: var(--dark-color);
+            font-weight: 700;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .github-config {
+            background: var(--dark-color);
+            color: var(--white);
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .github-config:hover {
+            background: var(--text-primary);
+            transform: translateY(-2px);
+        }
+
+        .sync-status {
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .sync-status.synced {
+            background: #d1fae5;
+            color: var(--success-color);
+        }
+
+        .sync-status.not-synced {
+            background: #fee2e2;
+            color: var(--danger-color);
+        }
+
+        .sync-status.syncing {
+            background: #dbeafe;
+            color: var(--info-color);
+        }
+
+        /* Container */
+        .container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        /* Navigation Tabs */
+        .nav-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            background: var(--white);
+            padding: 1rem;
+            border-radius: 1rem;
+            box-shadow: var(--shadow-lg);
+            flex-wrap: wrap;
+        }
+
+        .nav-tab {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 0.5rem;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-tab:hover {
+            background: var(--light-color);
+        }
+
+        .nav-tab.active {
+            background: var(--primary-color);
+            color: var(--white);
+        }
+
+        /* Content Sections */
+        .content-section {
+            display: none;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        /* Dashboard Grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--white);
+            padding: 1.5rem;
+            border-radius: 1rem;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: all 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .stat-icon.blue { background: #dbeafe; color: var(--info-color); }
+        .stat-icon.green { background: #d1fae5; color: var(--success-color); }
+        .stat-icon.yellow { background: #fef3c7; color: var(--warning-color); }
+        .stat-icon.red { background: #fee2e2; color: var(--danger-color); }
+        .stat-icon.purple { background: #ede9fe; color: #7c3aed; }
+
+        .stat-details h3 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-details p {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        /* Card Styles */
+        .card {
+            background: var(--white);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: var(--shadow-lg);
+            margin-bottom: 1.5rem;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--light-color);
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--dark-color);
+        }
+
+        /* Button Styles */
+        .btn {
+            padding: 0.625rem 1.25rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            background: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background: var(--success-color);
+            color: var(--white);
+        }
+
+        .btn-success:hover {
+            background: #059669;
+        }
+
+        .btn-danger {
+            background: var(--danger-color);
+            color: var(--white);
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
+        .btn-secondary {
+            background: var(--text-secondary);
+            color: var(--white);
+        }
+
+        .btn-secondary:hover {
+            background: var(--dark-color);
+        }
+
+        .btn-warning {
+            background: var(--warning-color);
+            color: var(--white);
+        }
+
+        .btn-warning:hover {
+            background: #d97706;
+        }
+
+        /* Form Styles */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            color: var(--dark-color);
+            font-size: 0.875rem;
+        }
+
+        .form-group label .required {
+            color: var(--danger-color);
+            margin-left: 0.25rem;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 0.75rem;
+            border: 2px solid var(--border-color);
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            transition: all 0.3s;
+            font-family: 'Inter', sans-serif;
+            width: 100%;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 120px;
+            max-height: 300px;
+            line-height: 1.5;
+        }
+
+        /* Table Styles */
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: var(--light-color);
+        }
+
+        th {
+            padding: 1rem;
+            text-align: left;
+            font-weight: 700;
+            color: var(--dark-color);
+            font-size: 0.875rem;
+            text-transform: uppercase;
+        }
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.875rem;
+        }
+
+        tbody tr {
+            transition: all 0.3s;
+        }
+
+        tbody tr:hover {
+            background: var(--light-color);
+        }
+
+        /* Badge Styles */
+        .badge {
+            padding: 0.375rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .badge-success { background: #d1fae5; color: #065f46; }
+        .badge-warning { background: #fef3c7; color: #92400e; }
+        .badge-danger { background: #fee2e2; color: #991b1b; }
+        .badge-info { background: #dbeafe; color: #1e40af; }
+        .badge-secondary { background: #e5e7eb; color: #374151; }
+
+        /* Priority Badges */
+        .priority-high { background: #fee2e2; color: #991b1b; }
+        .priority-medium { background: #fef3c7; color: #92400e; }
+        .priority-low { background: #d1fae5; color: #065f46; }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            overflow-y: auto;
+            padding: 2rem 0;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--white);
+            border-radius: 1rem;
+            padding: 2rem;
+            max-width: 800px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-lg);
+            animation: modalSlideIn 0.3s ease-out;
+            margin: auto;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--light-color);
+        }
+
+        .modal-header h2 {
+            font-size: 1.5rem;
+            color: var(--dark-color);
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-secondary);
+            transition: all 0.3s;
+        }
+
+        .close-modal:hover {
+            color: var(--danger-color);
+        }
+
+        /* Search and Filter */
+        .search-filter {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 250px;
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 0.75rem 1rem 0.75rem 2.5rem;
+            border: 2px solid var(--border-color);
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+        }
+
+        .filter-select {
+            padding: 0.75rem 1rem;
+            border: 2px solid var(--border-color);
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            cursor: pointer;
+        }
+
+        /* Action Buttons in Table */
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            padding: 0.375rem 0.75rem;
+            border: none;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            font-size: 0.75rem;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .action-btn-view {
+            background: #dbeafe;
+            color: var(--info-color);
+        }
+
+        .action-btn-edit {
+            background: #fef3c7;
+            color: var(--warning-color);
+        }
+
+        .action-btn-delete {
+            background: #fee2e2;
+            color: var(--danger-color);
+        }
+
+        .action-btn-transfer {
+            background: #ede9fe;
+            color: #7c3aed;
+        }
+
+        .action-btn-update {
+            background: #dcfce7;
+            color: #16a34a;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-secondary);
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.3;
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: var(--white);
+            padding: 1rem 1.5rem;
+            border-radius: 0.5rem;
+            box-shadow: var(--shadow-lg);
+            display: none;
+            align-items: center;
+            gap: 1rem;
+            z-index: 3000;
+            animation: toastSlideIn 0.3s ease-out;
+            min-width: 300px;
+        }
+
+        @keyframes toastSlideIn {
+            from {
+                transform: translateX(400px);
+            }
+            to {
+                transform: translateX(0);
+            }
+        }
+
+        .toast.active {
+            display: flex;
+        }
+
+        .toast.success {
+            border-left: 4px solid var(--success-color);
+        }
+
+        .toast.error {
+            border-left: 4px solid var(--danger-color);
+        }
+
+        .toast.info {
+            border-left: 4px solid var(--info-color);
+        }
+
+        /* Export Options */
+        .export-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .export-card {
+            background: var(--light-color);
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+
+        .export-card:hover {
+            background: var(--white);
+            border-color: var(--primary-color);
+            transform: translateY(-5px);
+        }
+
+        .export-card i {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .export-card h3 {
+            font-size: 1rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .export-card p {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        /* Currency Selector */
+        .currency-group {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 0.5rem;
+        }
+
+        /* Alert Box */
+        .alert {
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .alert-info {
+            background: #dbeafe;
+            color: #1e40af;
+            border-left: 4px solid var(--info-color);
+        }
+
+        .alert-warning {
+            background: #fef3c7;
+            color: #92400e;
+            border-left: 4px solid var(--warning-color);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .nav-tabs {
+                flex-wrap: wrap;
+            }
+
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .search-filter {
+                flex-direction: column;
+            }
+
+            .modal-content {
+                width: 95%;
+                padding: 1rem;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            border: 3px solid var(--light-color);
+            border-top: 3px solid var(--primary-color);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="logo">
+            <i class="fas fa-headset"></i>
+            <h1>IT Support & Asset Management</h1>
+        </div>
+        <div class="header-actions">
+            <div class="sync-status not-synced" id="syncStatus">
+                <i class="fas fa-circle-exclamation"></i>
+                <span>Not Configured</span>
+            </div>
+            <button class="github-config" onclick="openGithubConfig()">
+                <i class="fab fa-github"></i>
+                Configure GitHub
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Navigation Tabs -->
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="switchTab('dashboard')">
+                <i class="fas fa-chart-line"></i>
+                Dashboard
+            </button>
+            <button class="nav-tab" onclick="switchTab('tickets')">
+                <i class="fas fa-ticket"></i>
+                Support Tickets
+            </button>
+            <button class="nav-tab" onclick="switchTab('assets')">
+                <i class="fas fa-laptop"></i>
+                Asset Management
+            </button>
+            <button class="nav-tab" onclick="switchTab('users')">
+                <i class="fas fa-users"></i>
+                User Management
+            </button>
+            <button class="nav-tab" onclick="switchTab('reports')">
+                <i class="fas fa-file-export"></i>
+                Reports
+            </button>
+        </div>
+
+        <!-- Dashboard Section -->
+        <div id="dashboard" class="content-section active">
+            <div class="dashboard-grid">
+                <div class="stat-card">
+                    <div class="stat-icon blue">
+                        <i class="fas fa-ticket"></i>
+                    </div>
+                    <div class="stat-details">
+                        <h3 id="totalTickets">0</h3>
+                        <p>Total Tickets</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon yellow">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="stat-details">
+                        <h3 id="openTickets">0</h3>
+                        <p>Open Tickets</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon green">
+                        <i class="fas fa-laptop"></i>
+                    </div>
+                    <div class="stat-details">
+                        <h3 id="totalAssets">0</h3>
+                        <p>Total Assets</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon red">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stat-details">
+                        <h3 id="totalUsers">0</h3>
+                        <p>Total Users</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon purple">
+                        <i class="fas fa-exchange-alt"></i>
+                    </div>
+                    <div class="stat-details">
+                        <h3 id="totalTransfers">0</h3>
+                        <p>Asset Transfers</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Recent Tickets</h2>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Ticket ID</th>
+                                <th>Subject</th>
+                                <th>User</th>
+                                <th>Assigned To</th>
+                                <th>Priority</th>
+                                <th>Status</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recentTicketsTable">
+                            <tr>
+                                <td colspan="7" class="empty-state">
+                                    <i class="fas fa-inbox"></i>
+                                    <p>No tickets available</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tickets Section -->
+        <div id="tickets" class="content-section">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Support Tickets</h2>
+                    <button class="btn btn-primary" onclick="openTicketModal()">
+                        <i class="fas fa-plus"></i>
+                        New Ticket
+                    </button>
+                </div>
+
+                <div class="search-filter">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="ticketSearch" placeholder="Search tickets..." onkeyup="filterTickets()">
+                    </div>
+                    <select class="filter-select" id="ticketStatusFilter" onchange="filterTickets()">
+                        <option value="">All Status</option>
+                        <option value="Open">Open</option>
+                        <option value="In Progress">In Progress</option>
+                        <option value="Resolved">Resolved</option>
+                        <option value="Closed">Closed</option>
+                    </select>
+                    <select class="filter-select" id="ticketPriorityFilter" onchange="filterTickets()">
+                        <option value="">All Priority</option>
+                        <option value="High">High</option>
+                        <option value="Medium">Medium</option>
+                        <option value="Low">Low</option>
+                    </select>
+                </div>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Ticket ID</th>
+                                <th>Subject</th>
+                                <th>User</th>
+                                <th>Assigned To</th>
+                                <th>Category</th>
+                                <th>Priority</th>
+                                <th>Status</th>
+                                <th>Created Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ticketsTable">
+                            <tr>
+                                <td colspan="9" class="empty-state">
+                                    <i class="fas fa-ticket"></i>
+                                    <p>No tickets found. Create your first ticket!</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Assets Section -->
+        <div id="assets" class="content-section">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Asset Management</h2>
+                    <button class="btn btn-primary" onclick="openAssetModal()">
+                        <i class="fas fa-plus"></i>
+                        Add Asset
+                    </button>
+                </div>
+
+                <div class="search-filter">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="assetSearch" placeholder="Search assets..." onkeyup="filterAssets()">
+                    </div>
+                    <select class="filter-select" id="assetTypeFilter" onchange="filterAssets()">
+                        <option value="">All Types</option>
+                        <option value="Laptop">Laptop</option>
+                        <option value="Desktop">Desktop</option>
+                        <option value="Monitor">Monitor</option>
+                        <option value="Printer">Printer</option>
+                        <option value="Phone">Phone</option>
+                        <option value="Other">Other</option>
+                    </select>
+                    <select class="filter-select" id="assetStatusFilter" onchange="filterAssets()">
+                        <option value="">All Status</option>
+                        <option value="Available">Available</option>
+                        <option value="Assigned">Assigned</option>
+                        <option value="Under Repair">Under Repair</option>
+                        <option value="Retired">Retired</option>
+                    </select>
+                </div>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Asset ID</th>
+                                <th>Name</th>
+                                <th>Type</th>
+                                <th>Serial Number</th>
+                                <th>Vendor</th>
+                                <th>Amount</th>
+                                <th>Assigned To</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="assetsTable">
+                            <tr>
+                                <td colspan="9" class="empty-state">
+                                    <i class="fas fa-laptop"></i>
+                                    <p>No assets found. Add your first asset!</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Users Section -->
+        <div id="users" class="content-section">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">User Management</h2>
+                    <button class="btn btn-primary" onclick="openUserModal()">
+                        <i class="fas fa-plus"></i>
+                        Add User
+                    </button>
+                </div>
+
+                <div class="search-filter">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="userSearch" placeholder="Search users..." onkeyup="filterUsers()">
+                    </div>
+                    <select class="filter-select" id="userDepartmentFilter" onchange="filterUsers()">
+                        <option value="">All Departments</option>
+                        <option value="IT">IT</option>
+                        <option value="HR">HR</option>
+                        <option value="Finance">Finance</option>
+                        <option value="Sales">Sales</option>
+                        <option value="Marketing">Marketing</option>
+                        <option value="Operations">Operations</option>
+                    </select>
+                </div>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>User ID</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Department</th>
+                                <th>Phone</th>
+                                <th>Tickets</th>
+                                <th>Assets</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersTable">
+                            <tr>
+                                <td colspan="8" class="empty-state">
+                                    <i class="fas fa-users"></i>
+                                    <p>No users found. Add your first user!</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reports Section -->
+        <div id="reports" class="content-section">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Export Reports</h2>
+                </div>
+                <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+                    Export your data to CSV format for external analysis and record-keeping.
+                </p>
+                
+                <div class="export-options">
+                    <div class="export-card" onclick="exportToCSV('tickets')">
+                        <i class="fas fa-ticket"></i>
+                        <h3>Export Tickets</h3>
+                        <p>Download all support tickets</p>
+                    </div>
+                    <div class="export-card" onclick="exportToCSV('assets')">
+                        <i class="fas fa-laptop"></i>
+                        <h3>Export Assets</h3>
+                        <p>Download all assets data</p>
+                    </div>
+                    <div class="export-card" onclick="exportToCSV('users')">
+                        <i class="fas fa-users"></i>
+                        <h3>Export Users</h3>
+                        <p>Download all users data</p>
+                    </div>
+                    <div class="export-card" onclick="exportToCSV('transfers')">
+                        <i class="fas fa-exchange-alt"></i>
+                        <h3>Export Transfers</h3>
+                        <p>Download transfer history</p>
+                    </div>
+                    <div class="export-card" onclick="exportToCSV('all')">
+                        <i class="fas fa-database"></i>
+                        <h3>Export All Data</h3>
+                        <p>Download complete dataset</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Asset Transfer History</h2>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Transfer Date</th>
+                                <th>Asset</th>
+                                <th>From User</th>
+                                <th>To User</th>
+                                <th>Transferred By</th>
+                                <th>Reason</th>
+                            </tr>
+                        </thead>
+                        <tbody id="transferHistoryTable">
+                            <tr>
+                                <td colspan="6" class="empty-state">
+                                    <i class="fas fa-exchange-alt"></i>
+                                    <p>No transfer history available</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- GitHub Configuration Modal -->
+    <div id="githubModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fab fa-github"></i> GitHub Configuration</h2>
+                <button class="close-modal" onclick="closeGithubConfig()">&times;</button>
+            </div>
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle"></i>
+                <span>Configure GitHub to enable automatic data synchronization. Sync status will appear after successful connection.</span>
+            </div>
+            <div class="form-group">
+                <label>GitHub Personal Access Token <span class="required">*</span></label>
+                <input type="password" id="githubToken" placeholder="ghp_xxxxxxxxxxxx">
+                <small style="color: var(--text-secondary); font-size: 0.75rem;">
+                    Need a token? <a href="https://github.com/settings/tokens/new" target="_blank">Generate one here</a> with 'repo' permissions
+                </small>
+            </div>
+            <div class="form-group">
+                <label>Repository Owner <span class="required">*</span></label>
+                <input type="text" id="githubOwner" placeholder="username">
+            </div>
+            <div class="form-group">
+                <label>Repository Name <span class="required">*</span></label>
+                <input type="text" id="githubRepo" placeholder="it-support-data">
+            </div>
+            <div class="form-group">
+                <label>Branch (optional)</label>
+                <input type="text" id="githubBranch" placeholder="main" value="main">
+            </div>
+            <div style="display: flex; gap: 1rem; margin-top: 1.5rem; flex-wrap: wrap;">
+                <button class="btn btn-primary" onclick="saveGithubConfig()">
+                    <i class="fas fa-save"></i>
+                    Save & Sync All Data
+                </button>
+                <button class="btn btn-success" onclick="testGithubConnection()">
+                    <i class="fas fa-plug"></i>
+                    Test Connection
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ticket Modal -->
+    <div id="ticketModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="ticketModalTitle"><i class="fas fa-ticket"></i> New Ticket</h2>
+                <button class="close-modal" onclick="closeTicketModal()">&times;</button>
+            </div>
+            <form id="ticketForm">
+                <input type="hidden" id="ticketId">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>User <span class="required">*</span></label>
+                        <select id="ticketUser" required>
+                            <option value="">Select User</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Assigned To <span class="required">*</span></label>
+                        <select id="ticketAssignedTo" required>
+                            <option value="">Select Support Staff</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Category <span class="required">*</span></label>
+                        <select id="ticketCategory" required>
+                            <option value="">Select Category</option>
+                            <option value="Hardware">Hardware</option>
+                            <option value="Software">Software</option>
+                            <option value="Network">Network</option>
+                            <option value="Access">Access</option>
+                            <option value="Email">Email</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Priority <span class="required">*</span></label>
+                        <select id="ticketPriority" required>
+                            <option value="">Select Priority</option>
+                            <option value="High">High</option>
+                            <option value="Medium">Medium</option>
+                            <option value="Low">Low</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Status <span class="required">*</span></label>
+                        <select id="ticketStatus" required onchange="toggleResolution()">
+                            <option value="Open">Open</option>
+                            <option value="In Progress">In Progress</option>
+                            <option value="Resolved">Resolved</option>
+                            <option value="Closed">Closed</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group full-width">
+                    <label>Subject <span class="required">*</span></label>
+                    <input type="text" id="ticketSubject" required placeholder="Brief description of the issue">
+                </div>
+                <div class="form-group full-width">
+                    <label>Description <span class="required">*</span></label>
+                    <textarea id="ticketDescription" required placeholder="Detailed description of the issue"></textarea>
+                </div>
+                <div class="form-group full-width" id="resolutionGroup" style="display: none;">
+                    <label>Resolution Details <span class="required">*</span></label>
+                    <textarea id="ticketResolution" placeholder="Describe how the issue was resolved"></textarea>
+                </div>
+                <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i>
+                        Save Ticket
+                    </button>
+                    <button type="button" class="btn btn-secondary" onclick="closeTicketModal()">
+                        Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Update Ticket Status Modal -->
+    <div id="updateStatusModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-edit"></i> Update Ticket Status</h2>
+                <button class="close-modal" onclick="closeUpdateStatusModal()">&times;</button>
+            </div>
+            <form id="updateStatusForm">
+                <input type="hidden" id="updateTicketId">
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i>
+                    <span>Update the ticket status and provide resolution details if closing/resolving.</span>
+                </div>
+                <div class="form-group">
+                    <label>Ticket ID</label>
+                    <input type="text" id="updateTicketIdDisplay" disabled>
+                </div>
+                <div class="form-group">
+                    <label>Subject</label>
+                    <input type="text" id="updateTicketSubject" disabled>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Assigned To <span class="required">*</span></label>
+                        <select id="updateAssignedTo" required>
+                            <option value="">Select Support Staff</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>New Status <span class="required">*</span></label>
+                        <select id="updateStatus" required onchange="toggleUpdateResolution()">
+                            <option value="Open">Open</option>
+                            <option value="In Progress">In Progress</option>
+                            <option value="Resolved">Resolved</option>
+                            <option value="Closed">Closed</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group full-width" id="updateResolutionGroup" style="display: none;">
+                    <label>Resolution Details <span class="required">*</span></label>
+                    <textarea id="updateResolution" placeholder="Describe how the issue was resolved"></textarea>
+                </div>
+                <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-check"></i>
+                        Update Status
+                    </button>
+                    <button type="button" class="btn btn-secondary" onclick="closeUpdateStatusModal()">
+                        Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Asset Modal -->
+    <div id="assetModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="assetModalTitle"><i class="fas fa-laptop"></i> Add Asset</h2>
+                <button class="close-modal" onclick="closeAssetModal()">&times;</button>
+            </div>
+            <form id="assetForm">
+                <input type="hidden" id="assetId">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Asset Name <span class="required">*</span></label>
+                        <input type="text" id="assetName" required placeholder="e.g., Dell Latitude 5420">
+                    </div>
+                    <div class="form-group">
+                        <label>Asset Type <span class="required">*</span></label>
+                        <select id="assetType" required>
+                            <option value="">Select Type</option>
+                            <option value="Laptop">Laptop</option>
+                            <option value="Desktop">Desktop</option>
+                            <option value="Monitor">Monitor</option>
+                            <option value="Printer">Printer</option>
+                            <option value="Phone">Phone</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Serial Number <span class="required">*</span></label>
+                        <input type="text" id="assetSerial" required placeholder="SN-XXXXX">
+                    </div>
+                    <div class="form-group">
+                        <label>Model</label>
+                        <input type="text" id="assetModel" placeholder="Model number">
+                    </div>
+                    <div class="form-group">
+                        <label>Manufacturer</label>
+                        <input type="text" id="assetManufacturer" placeholder="e.g., Dell, HP, Lenovo">
+                    </div>
+                    <div class="form-group">
+                        <label>Vendor Name <span class="required">*</span></label>
+                        <input type="text" id="assetVendor" required placeholder="Vendor company name">
+                    </div>
+                    <div class="form-group">
+                        <label>Purchase Amount <span class="required">*</span></label>
+                        <div class="currency-group">
+                            <input type="number" id="assetAmount" required placeholder="0.00" step="0.01" min="0">
+                            <select id="assetCurrency" required>
+                                <option value="USD">USD</option>
+                                <option value="NPR">NPR</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Purchase Date</label>
+                        <input type="date" id="assetPurchaseDate">
+                    </div>
+                    <div class="form-group">
+                        <label>Warranty Expiry</label>
+                        <input type="date" id="assetWarranty">
+                    </div>
+                    <div class="form-group">
+                        <label>Status <span class="required">*</span></label>
+                        <select id="assetStatus" required>
+                            <option value="Available">Available</option>
+                            <option value="Assigned">Assigned</option>
+                            <option value="Under Repair">Under Repair</option>
+                            <option value="Retired">Retired</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Assigned To</label>
+                        <select id="assetAssignedTo">
+                            <option value="">Not Assigned</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group full-width">
+                    <label>Notes</label>
+                    <textarea id="assetNotes" placeholder="Additional information about the asset"></textarea>
+                </div>
+                <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i>
+                        Save Asset
+                    </button>
+                    <button type="button" class="btn btn-secondary" onclick="closeAssetModal()">
+                        Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Asset Transfer Modal -->
+    <div id="transferModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-exchange-alt"></i> Transfer Asset</h2>
+                <button class="close-modal" onclick="closeTransferModal()">&times;</button>
+            </div>
+            <form id="transferForm">
+                <input type="hidden" id="transferAssetId">
+                <div class="form-group">
+                    <label>Asset</label>
+                    <input type="text" id="transferAssetName" disabled>
+                </div>
+                <div class="form-group">
+                    <label>Current User</label>
+                    <input type="text" id="transferCurrentUser" disabled>
+                </div>
+                <div class="form-group">
+                    <label>Transfer To <span class="required">*</span></label>
+                    <select id="transferToUser" required>
+                        <option value="">Select User</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Transferred By <span class="required">*</span></label>
+                    <select id="transferBy" required>
+                        <option value="">Select Staff Member</option>
+                    </select>
+                </div>
+                <div class="form-group full-width">
+                    <label>Reason for Transfer <span class="required">*</span></label>
+                    <textarea id="transferReason" required placeholder="Why is this asset being transferred?"></textarea>
+                </div>
+                <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-exchange-alt"></i>
+                        Complete Transfer
+                    </button>
+                    <button type="button" class="btn btn-secondary" onclick="closeTransferModal()">
+                        Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- User Modal -->
+    <div id="userModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="userModalTitle"><i class="fas fa-user"></i> Add User</h2>
+                <button class="close-modal" onclick="closeUserModal()">&times;</button>
+            </div>
+            <form id="userForm">
+                <input type="hidden" id="userId">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Full Name <span class="required">*</span></label>
+                        <input type="text" id="userName" required placeholder="John Doe">
+                    </div>
+                    <div class="form-group">
+                        <label>Email <span class="required">*</span></label>
+                        <input type="email" id="userEmail" required placeholder="john.doe@company.com">
+                    </div>
+                    <div class="form-group">
+                        <label>Phone</label>
+                        <input type="tel" id="userPhone" placeholder="+1 234 567 8900">
+                    </div>
+                    <div class="form-group">
+                        <label>Department <span class="required">*</span></label>
+                        <select id="userDepartment" required>
+                            <option value="">Select Department</option>
+                            <option value="IT">IT</option>
+                            <option value="HR">HR</option>
+                            <option value="Finance">Finance</option>
+                            <option value="Sales">Sales</option>
+                            <option value="Marketing">Marketing</option>
+                            <option value="Operations">Operations</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Position</label>
+                        <input type="text" id="userPosition" placeholder="e.g., Software Engineer">
+                    </div>
+                    <div class="form-group">
+                        <label>Location</label>
+                        <input type="text" id="userLocation" placeholder="e.g., New York Office">
+                    </div>
+                </div>
+                <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i>
+                        Save User
+                    </button>
+                    <button type="button" class="btn btn-secondary" onclick="closeUserModal()">
+                        Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast">
+        <i id="toastIcon"></i>
+        <span id="toastMessage"></span>
+    </div>
+
+    <script>
+        // Global Data Storage
+        let tickets = [];
+        let assets = [];
+        let users = [];
+        let transfers = [];
+        let githubConfig = {
+            token: '',
+            owner: '',
+            repo: '',
+            branch: 'main',
+            configured: false
+        };
+
+        // Initialize Application
+        document.addEventListener('DOMContentLoaded', function() {
+            loadGithubConfig();
+            loadAllData();
+        });
+
+        // Tab Switching
+        function switchTab(tabName) {
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+
+            if (tabName === 'reports') {
+                renderTransferHistory();
+            }
+        }
+
+        // GitHub Configuration Functions
+        function openGithubConfig() {
+            document.getElementById('githubModal').classList.add('active');
+            document.getElementById('githubToken').value = githubConfig.token || '';
+            document.getElementById('githubOwner').value = githubConfig.owner || '';
+            document.getElementById('githubRepo').value = githubConfig.repo || '';
+            document.getElementById('githubBranch').value = githubConfig.branch || 'main';
+        }
+
+        function closeGithubConfig() {
+            document.getElementById('githubModal').classList.remove('active');
+        }
+
+        async function saveGithubConfig() {
+            const token = document.getElementById('githubToken').value.trim();
+            const owner = document.getElementById('githubOwner').value.trim();
+            const repo = document.getElementById('githubRepo').value.trim();
+            const branch = document.getElementById('githubBranch').value.trim() || 'main';
+            
+            if (!token || !owner || !repo) {
+                showToast('Please fill in all required fields', 'error');
+                return;
+            }
+
+            // Test connection first
+            try {
+                const response = await fetch(`https://api.github.com/repos/${owner}/${repo}`, {
+                    headers: {
+                        'Authorization': `token ${token}`,
+                        'Accept': 'application/vnd.github.v3+json'
+                    }
+                });
+                
+                if (!response.ok && response.status !== 404) {
+                    showToast('GitHub connection failed. Please check your credentials.', 'error');
+                    return;
+                }
+
+                // Save configuration
+                githubConfig = {
+                    token: token,
+                    owner: owner,
+                    repo: repo,
+                    branch: branch,
+                    configured: true
+                };
+                
+                localStorage.setItem('githubConfig', JSON.stringify(githubConfig));
+                updateSyncStatus('configured');
+                showToast('GitHub configured successfully. Syncing all data...', 'info');
+                
+                // Sync all data immediately after configuration
+                await syncAllDataToGithub();
+                
+                closeGithubConfig();
+            } catch (error) {
+                showToast('Network error. Please check your internet connection.', 'error');
+            }
+        }
+
+        function loadGithubConfig() {
+            const saved = localStorage.getItem('githubConfig');
+            if (saved) {
+                githubConfig = JSON.parse(saved);
+                if (githubConfig.configured) {
+                    updateSyncStatus('configured');
+                }
+            }
+        }
+
+        async function testGithubConnection() {
+            const token = document.getElementById('githubToken').value.trim();
+            const owner = document.getElementById('githubOwner').value.trim();
+            const repo = document.getElementById('githubRepo').value.trim();
+            
+            if (!token || !owner || !repo) {
+                showToast('Please fill in all fields before testing', 'error');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`https://api.github.com/repos/${owner}/${repo}`, {
+                    headers: {
+                        'Authorization': `token ${token}`,
+                        'Accept': 'application/vnd.github.v3+json'
+                    }
+                });
+                
+                if (response.ok) {
+                    showToast('GitHub connection successful!', 'success');
+                } else if (response.status === 404) {
+                    showToast('Repository not found. It will be created on first sync.', 'info');
+                } else {
+                    showToast('Connection failed. Please check your credentials.', 'error');
+                }
+            } catch (error) {
+                showToast('Network error. Please check your internet connection.', 'error');
+            }
+        }
+
+        function updateSyncStatus(status) {
+            const statusEl = document.getElementById('syncStatus');
+            if (status === 'configured') {
+                statusEl.className = 'sync-status synced';
+                statusEl.innerHTML = '<i class="fas fa-circle-check"></i><span>Synced</span>';
+            } else if (status === 'syncing') {
+                statusEl.className = 'sync-status syncing';
+                statusEl.innerHTML = '<i class="fas fa-sync fa-spin"></i><span>Syncing...</span>';
+            } else {
+                statusEl.className = 'sync-status not-synced';
+                statusEl.innerHTML = '<i class="fas fa-circle-exclamation"></i><span>Not Configured</span>';
+            }
+        }
+
+        // GitHub API Functions - FIXED VERSION
+        async function syncToGithub(filename, data) {
+            if (!githubConfig.configured || !githubConfig.token) {
+                return false;
+            }
+            
+            try {
+                const path = `data/${filename}`;
+                
+                // Convert data to JSON string and then to base64
+                const jsonString = JSON.stringify(data, null, 2);
+                const content = btoa(unescape(encodeURIComponent(jsonString)));
+                
+                console.log(`Syncing ${filename} with ${Array.isArray(data) ? data.length : 0} items...`);
+                
+                let sha = null;
+                
+                // Try to get existing file SHA
+                try {
+                    const getResponse = await fetch(
+                        `https://api.github.com/repos/${githubConfig.owner}/${githubConfig.repo}/contents/${path}?ref=${githubConfig.branch}`,
+                        {
+                            headers: {
+                                'Authorization': `token ${githubConfig.token}`,
+                                'Accept': 'application/vnd.github.v3+json'
+                            }
+                        }
+                    );
+                    
+                    if (getResponse.ok) {
+                        const fileData = await getResponse.json();
+                        sha = fileData.sha;
+                        console.log(`Found existing ${filename}, SHA: ${sha}`);
+                    } else {
+                        console.log(`${filename} doesn't exist, will create new file`);
+                    }
+                } catch (e) {
+                    console.log(`Error checking ${filename}:`, e.message);
+                }
+                
+                // Prepare commit data
+                const putData = {
+                    message: `Update ${filename} - ${new Date().toISOString()}`,
+                    content: content,
+                    branch: githubConfig.branch
+                };
+                
+                if (sha) {
+                    putData.sha = sha;
+                }
+                
+                // Upload file
+                const response = await fetch(
+                    `https://api.github.com/repos/${githubConfig.owner}/${githubConfig.repo}/contents/${path}`,
+                    {
+                        method: 'PUT',
+                        headers: {
+                            'Authorization': `token ${githubConfig.token}`,
+                            'Accept': 'application/vnd.github.v3+json',
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(putData)
+                    }
+                );
+                
+                if (response.ok) {
+                    console.log(`✅ ${filename} synced successfully`);
+                    return true;
+                } else {
+                    const errorData = await response.json();
+                    console.error(`❌ Failed to sync ${filename}:`, errorData);
+                    return false;
+                }
+            } catch (error) {
+                console.error(`❌ GitHub sync error for ${filename}:`, error);
+                return false;
+            }
+        }
+
+        async function syncAllDataToGithub() {
+            if (!githubConfig.configured) {
+                console.log('GitHub not configured, skipping sync');
+                return;
+            }
+
+            updateSyncStatus('syncing');
+            
+            console.log('=== Starting GitHub Sync ===');
+            console.log('Tickets:', tickets.length);
+            console.log('Assets:', assets.length);
+            console.log('Users:', users.length);
+            console.log('Transfers:', transfers.length);
+            
+            try {
+                // Sync each file sequentially to avoid rate limiting
+                const ticketsResult = await syncToGithub('tickets.json', tickets);
+                await new Promise(resolve => setTimeout(resolve, 500)); // Wait 500ms between requests
+                
+                const usersResult = await syncToGithub('users.json', users);
+                await new Promise(resolve => setTimeout(resolve, 500));
+                
+                const assetsResult = await syncToGithub('assets.json', assets);
+                await new Promise(resolve => setTimeout(resolve, 500));
+                
+                const transfersResult = await syncToGithub('transfers.json', transfers);
+                
+                console.log('=== Sync Results ===');
+                console.log('Tickets:', ticketsResult ? '✅' : '❌');
+                console.log('Users:', usersResult ? '✅' : '❌');
+                console.log('Assets:', assetsResult ? '✅' : '❌');
+                console.log('Transfers:', transfersResult ? '✅' : '❌');
+                
+                if (ticketsResult && usersResult && assetsResult && transfersResult) {
+                    updateSyncStatus('configured');
+                    showToast('All data synced to GitHub successfully', 'success');
+                } else {
+                    updateSyncStatus('configured');
+                    showToast('Some files failed to sync. Check console for details.', 'error');
+                }
+            } catch (error) {
+                console.error('Sync error:', error);
+                updateSyncStatus('configured');
+                showToast('Sync failed. Check console for details.', 'error');
+            }
+        }
+
+        async function loadFromGithub(filename) {
+            if (!githubConfig.configured || !githubConfig.token) {
+                return null;
+            }
+            
+            try {
+                const path = `data/${filename}`;
+                const response = await fetch(
+                    `https://api.github.com/repos/${githubConfig.owner}/${githubConfig.repo}/contents/${path}?ref=${githubConfig.branch}`,
+                    {
+                        headers: {
+                            'Authorization': `token ${githubConfig.token}`,
+                            'Accept': 'application/vnd.github.v3+json'
+                        }
+                    }
+                );
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    const content = decodeURIComponent(escape(atob(data.content)));
+                    console.log(`✅ Loaded ${filename} from GitHub`);
+                    return JSON.parse(content);
+                } else {
+                    console.log(`⚠️ ${filename} not found in GitHub`);
+                }
+            } catch (error) {
+                console.error(`Error loading ${filename} from GitHub:`, error);
+            }
+            
+            return null;
+        }
+
+        // Data Management Functions
+        async function loadAllData() {
+            if (githubConfig.configured) {
+                updateSyncStatus('syncing');
+                console.log('Loading data from GitHub...');
+            }
+            
+            // Try to load from GitHub first
+            const githubTickets = await loadFromGithub('tickets.json');
+            const githubAssets = await loadFromGithub('assets.json');
+            const githubUsers = await loadFromGithub('users.json');
+            const githubTransfers = await loadFromGithub('transfers.json');
+            
+            // Load from localStorage as fallback
+            tickets = githubTickets || JSON.parse(localStorage.getItem('tickets') || '[]');
+            assets = githubAssets || JSON.parse(localStorage.getItem('assets') || '[]');
+            users = githubUsers || JSON.parse(localStorage.getItem('users') || '[]');
+            transfers = githubTransfers || JSON.parse(localStorage.getItem('transfers') || '[]');
+            
+            console.log('Loaded data:', {
+                tickets: tickets.length,
+                assets: assets.length,
+                users: users.length,
+                transfers: transfers.length
+            });
+            
+            // Update all displays
+            renderTickets();
+            renderAssets();
+            renderUsers();
+            renderTransferHistory();
+            updateDashboard();
+            populateUserSelects();
+            
+            if (githubConfig.configured) {
+                updateSyncStatus('configured');
+            }
+        }
+
+        async function saveAllData() {
+            console.log('Saving all data...');
+            
+            // Save to localStorage
+            localStorage.setItem('tickets', JSON.stringify(tickets));
+            localStorage.setItem('assets', JSON.stringify(assets));
+            localStorage.setItem('users', JSON.stringify(users));
+            localStorage.setItem('transfers', JSON.stringify(transfers));
+            
+            console.log('Saved to localStorage');
+            
+            // Sync to GitHub only if configured
+            if (githubConfig.configured) {
+                await syncAllDataToGithub();
+            } else {
+                console.log('GitHub not configured, skipping sync');
+            }
+        }
+
+        // Dashboard Functions
+        function updateDashboard() {
+            document.getElementById('totalTickets').textContent = tickets.length;
+            document.getElementById('openTickets').textContent = tickets.filter(t => t.status === 'Open' || t.status === 'In Progress').length;
+            document.getElementById('totalAssets').textContent = assets.length;
+            document.getElementById('totalUsers').textContent = users.length;
+            document.getElementById('totalTransfers').textContent = transfers.length;
+            
+            renderRecentTickets();
+        }
+
+        function renderRecentTickets() {
+            const tbody = document.getElementById('recentTicketsTable');
+            const recentTickets = tickets.slice(-5).reverse();
+            
+            if (recentTickets.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="empty-state"><i class="fas fa-inbox"></i><p>No tickets available</p></td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = recentTickets.map(ticket => {
+                const user = users.find(u => u.id === ticket.userId);
+                const assignedUser = ticket.assignedTo ? users.find(u => u.id === ticket.assignedTo) : null;
+                return `
+                    <tr>
+                        <td><strong>${ticket.id}</strong></td>
+                        <td>${ticket.subject}</td>
+                        <td>${user ? user.name : 'Unknown'}</td>
+                        <td>${assignedUser ? assignedUser.name : 'Unassigned'}</td>
+                        <td><span class="badge priority-${ticket.priority.toLowerCase()}">${ticket.priority}</span></td>
+                        <td><span class="badge badge-${getStatusBadge(ticket.status)}">${ticket.status}</span></td>
+                        <td>${new Date(ticket.createdDate).toLocaleDateString()}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Ticket Functions
+        function toggleResolution() {
+            const status = document.getElementById('ticketStatus').value;
+            const resolutionGroup = document.getElementById('resolutionGroup');
+            const resolutionField = document.getElementById('ticketResolution');
+            
+            if (status === 'Resolved' || status === 'Closed') {
+                resolutionGroup.style.display = 'block';
+                resolutionField.required = true;
+            } else {
+                resolutionGroup.style.display = 'none';
+                resolutionField.required = false;
+            }
+        }
+
+        function toggleUpdateResolution() {
+            const status = document.getElementById('updateStatus').value;
+            const resolutionGroup = document.getElementById('updateResolutionGroup');
+            const resolutionField = document.getElementById('updateResolution');
+            
+            if (status === 'Resolved' || status === 'Closed') {
+                resolutionGroup.style.display = 'block';
+                resolutionField.required = true;
+            } else {
+                resolutionGroup.style.display = 'none';
+                resolutionField.required = false;
+            }
+        }
+
+        function openTicketModal(ticketId = null) {
+            const modal = document.getElementById('ticketModal');
+            const form = document.getElementById('ticketForm');
+            form.reset();
+            
+            if (ticketId) {
+                const ticket = tickets.find(t => t.id === ticketId);
+                if (ticket) {
+                    document.getElementById('ticketModalTitle').innerHTML = '<i class="fas fa-ticket"></i> Edit Ticket';
+                    document.getElementById('ticketId').value = ticket.id;
+                    document.getElementById('ticketUser').value = ticket.userId;
+                    document.getElementById('ticketAssignedTo').value = ticket.assignedTo || '';
+                    document.getElementById('ticketCategory').value = ticket.category;
+                    document.getElementById('ticketPriority').value = ticket.priority;
+                    document.getElementById('ticketStatus').value = ticket.status;
+                    document.getElementById('ticketSubject').value = ticket.subject;
+                    document.getElementById('ticketDescription').value = ticket.description;
+                    document.getElementById('ticketResolution').value = ticket.resolution || '';
+                    toggleResolution();
+                }
+            } else {
+                document.getElementById('ticketModalTitle').innerHTML = '<i class="fas fa-ticket"></i> New Ticket';
+                document.getElementById('ticketStatus').value = 'Open';
+                toggleResolution();
+            }
+            
+            modal.classList.add('active');
+        }
+
+        function closeTicketModal() {
+            document.getElementById('ticketModal').classList.remove('active');
+        }
+
+        document.getElementById('ticketForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const ticketId = document.getElementById('ticketId').value;
+            const ticketData = {
+                userId: document.getElementById('ticketUser').value,
+                assignedTo: document.getElementById('ticketAssignedTo').value,
+                category: document.getElementById('ticketCategory').value,
+                priority: document.getElementById('ticketPriority').value,
+                status: document.getElementById('ticketStatus').value,
+                subject: document.getElementById('ticketSubject').value,
+                description: document.getElementById('ticketDescription').value,
+                resolution: document.getElementById('ticketResolution').value || null
+            };
+            
+            if (ticketId) {
+                const index = tickets.findIndex(t => t.id === ticketId);
+                tickets[index] = { 
+                    ...tickets[index], 
+                    ...ticketData,
+                    updatedDate: new Date().toISOString()
+                };
+                showToast('Ticket updated successfully', 'success');
+            } else {
+                const newTicket = {
+                    id: 'TKT-' + Date.now(),
+                    ...ticketData,
+                    createdDate: new Date().toISOString(),
+                    updatedDate: new Date().toISOString()
+                };
+                tickets.push(newTicket);
+                showToast('Ticket created successfully', 'success');
+            }
+            
+            await saveAllData();
+            renderTickets();
+            updateDashboard();
+            closeTicketModal();
+        });
+
+        // Update Ticket Status Functions
+        function openUpdateStatusModal(ticketId) {
+            const ticket = tickets.find(t => t.id === ticketId);
+            if (!ticket) return;
+            
+            document.getElementById('updateTicketId').value = ticket.id;
+            document.getElementById('updateTicketIdDisplay').value = ticket.id;
+            document.getElementById('updateTicketSubject').value = ticket.subject;
+            document.getElementById('updateAssignedTo').value = ticket.assignedTo || '';
+            document.getElementById('updateStatus').value = ticket.status;
+            document.getElementById('updateResolution').value = ticket.resolution || '';
+            
+            toggleUpdateResolution();
+            
+            document.getElementById('updateStatusModal').classList.add('active');
+        }
+
+        function closeUpdateStatusModal() {
+            document.getElementById('updateStatusModal').classList.remove('active');
+        }
+
+        document.getElementById('updateStatusForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const ticketId = document.getElementById('updateTicketId').value;
+            const assignedTo = document.getElementById('updateAssignedTo').value;
+            const status = document.getElementById('updateStatus').value;
+            const resolution = document.getElementById('updateResolution').value;
+            
+            const index = tickets.findIndex(t => t.id === ticketId);
+            if (index !== -1) {
+                tickets[index].assignedTo = assignedTo;
+                tickets[index].status = status;
+                tickets[index].resolution = resolution || null;
+                tickets[index].updatedDate = new Date().toISOString();
+                
+                await saveAllData();
+                renderTickets();
+                updateDashboard();
+                closeUpdateStatusModal();
+                showToast('Ticket status updated successfully', 'success');
+            }
+        });
+
+        function renderTickets() {
+            const tbody = document.getElementById('ticketsTable');
+            
+            if (tickets.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="9" class="empty-state"><i class="fas fa-ticket"></i><p>No tickets found. Create your first ticket!</p></td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = tickets.map(ticket => {
+                const user = users.find(u => u.id === ticket.userId);
+                const assignedUser = ticket.assignedTo ? users.find(u => u.id === ticket.assignedTo) : null;
+                return `
+                    <tr>
+                        <td><strong>${ticket.id}</strong></td>
+                        <td>${ticket.subject}</td>
+                        <td>${user ? user.name : 'Unknown'}</td>
+                        <td>${assignedUser ? assignedUser.name : 'Unassigned'}</td>
+                        <td>${ticket.category}</td>
+                        <td><span class="badge priority-${ticket.priority.toLowerCase()}">${ticket.priority}</span></td>
+                        <td><span class="badge badge-${getStatusBadge(ticket.status)}">${ticket.status}</span></td>
+                        <td>${new Date(ticket.createdDate).toLocaleDateString()}</td>
+                        <td class="action-buttons">
+                            <button class="action-btn action-btn-update" onclick="openUpdateStatusModal('${ticket.id}')">
+                                <i class="fas fa-edit"></i> Update
+                            </button>
+                            <button class="action-btn action-btn-edit" onclick="openTicketModal('${ticket.id}')">
+                                <i class="fas fa-pen"></i> Edit
+                            </button>
+                            <button class="action-btn action-btn-delete" onclick="deleteTicket('${ticket.id}')">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        async function deleteTicket(ticketId) {
+            if (confirm('Are you sure you want to delete this ticket?')) {
+                tickets = tickets.filter(t => t.id !== ticketId);
+                await saveAllData();
+                renderTickets();
+                updateDashboard();
+                showToast('Ticket deleted successfully', 'success');
+            }
+        }
+
+        function filterTickets() {
+            const searchTerm = document.getElementById('ticketSearch').value.toLowerCase();
+            const statusFilter = document.getElementById('ticketStatusFilter').value;
+            const priorityFilter = document.getElementById('ticketPriorityFilter').value;
+            
+            const filteredTickets = tickets.filter(ticket => {
+                const user = users.find(u => u.id === ticket.userId);
+                const matchesSearch = ticket.subject.toLowerCase().includes(searchTerm) ||
+                                    ticket.description.toLowerCase().includes(searchTerm) ||
+                                    (user && user.name.toLowerCase().includes(searchTerm));
+                const matchesStatus = !statusFilter || ticket.status === statusFilter;
+                const matchesPriority = !priorityFilter || ticket.priority === priorityFilter;
+                
+                return matchesSearch && matchesStatus && matchesPriority;
+            });
+            
+            const tbody = document.getElementById('ticketsTable');
+            if (filteredTickets.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="9" class="empty-state"><i class="fas fa-search"></i><p>No tickets match your filters</p></td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = filteredTickets.map(ticket => {
+                const user = users.find(u => u.id === ticket.userId);
+                const assignedUser = ticket.assignedTo ? users.find(u => u.id === ticket.assignedTo) : null;
+                return `
+                    <tr>
+                        <td><strong>${ticket.id}</strong></td>
+                        <td>${ticket.subject}</td>
+                        <td>${user ? user.name : 'Unknown'}</td>
+                        <td>${assignedUser ? assignedUser.name : 'Unassigned'}</td>
+                        <td>${ticket.category}</td>
+                        <td><span class="badge priority-${ticket.priority.toLowerCase()}">${ticket.priority}</span></td>
+                        <td><span class="badge badge-${getStatusBadge(ticket.status)}">${ticket.status}</span></td>
+                        <td>${new Date(ticket.createdDate).toLocaleDateString()}</td>
+                        <td class="action-buttons">
+                            <button class="action-btn action-btn-update" onclick="openUpdateStatusModal('${ticket.id}')">
+                                <i class="fas fa-edit"></i> Update
+                            </button>
+                            <button class="action-btn action-btn-edit" onclick="openTicketModal('${ticket.id}')">
+                                <i class="fas fa-pen"></i> Edit
+                            </button>
+                            <button class="action-btn action-btn-delete" onclick="deleteTicket('${ticket.id}')">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Asset Functions
+        function openAssetModal(assetId = null) {
+            const modal = document.getElementById('assetModal');
+            const form = document.getElementById('assetForm');
+            form.reset();
+            
+            if (assetId) {
+                const asset = assets.find(a => a.id === assetId);
+                if (asset) {
+                    document.getElementById('assetModalTitle').innerHTML = '<i class="fas fa-laptop"></i> Edit Asset';
+                    document.getElementById('assetId').value = asset.id;
+                    document.getElementById('assetName').value = asset.name;
+                    document.getElementById('assetType').value = asset.type;
+                    document.getElementById('assetSerial').value = asset.serialNumber;
+                    document.getElementById('assetModel').value = asset.model || '';
+                    document.getElementById('assetManufacturer').value = asset.manufacturer || '';
+                    document.getElementById('assetVendor').value = asset.vendor || '';
+                    document.getElementById('assetAmount').value = asset.amount || '';
+                    document.getElementById('assetCurrency').value = asset.currency || 'USD';
+                    document.getElementById('assetPurchaseDate').value = asset.purchaseDate || '';
+                    document.getElementById('assetWarranty').value = asset.warrantyExpiry || '';
+                    document.getElementById('assetStatus').value = asset.status;
+                    document.getElementById('assetAssignedTo').value = asset.assignedTo || '';
+                    document.getElementById('assetNotes').value = asset.notes || '';
+                }
+            } else {
+                document.getElementById('assetModalTitle').innerHTML = '<i class="fas fa-laptop"></i> Add Asset';
+                document.getElementById('assetStatus').value = 'Available';
+                document.getElementById('assetCurrency').value = 'USD';
+            }
+            
+            modal.classList.add('active');
+        }
+
+        function closeAssetModal() {
+            document.getElementById('assetModal').classList.remove('active');
+        }
+
+        document.getElementById('assetForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const assetId = document.getElementById('assetId').value;
+            const assetData = {
+                name: document.getElementById('assetName').value,
+                type: document.getElementById('assetType').value,
+                serialNumber: document.getElementById('assetSerial').value,
+                model: document.getElementById('assetModel').value,
+                manufacturer: document.getElementById('assetManufacturer').value,
+                vendor: document.getElementById('assetVendor').value,
+                amount: parseFloat(document.getElementById('assetAmount').value),
+                currency: document.getElementById('assetCurrency').value,
+                purchaseDate: document.getElementById('assetPurchaseDate').value,
+                warrantyExpiry: document.getElementById('assetWarranty').value,
+                status: document.getElementById('assetStatus').value,
+                assignedTo: document.getElementById('assetAssignedTo').value,
+                notes: document.getElementById('assetNotes').value
+            };
+            
+            if (assetId) {
+                const index = assets.findIndex(a => a.id === assetId);
+                assets[index] = { ...assets[index], ...assetData };
+                showToast('Asset updated successfully', 'success');
+            } else {
+                const newAsset = {
+                    id: 'AST-' + Date.now(),
+                    ...assetData,
+                    createdDate: new Date().toISOString()
+                };
+                assets.push(newAsset);
+                showToast('Asset added successfully', 'success');
+            }
+            
+            await saveAllData();
+            renderAssets();
+            updateDashboard();
+            closeAssetModal();
+        });
+
+        function renderAssets() {
+            const tbody = document.getElementById('assetsTable');
+            
+            if (assets.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="9" class="empty-state"><i class="fas fa-laptop"></i><p>No assets found. Add your first asset!</p></td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = assets.map(asset => {
+                const user = asset.assignedTo ? users.find(u => u.id === asset.assignedTo) : null;
+                const amountDisplay = asset.amount ? `${asset.currency} ${asset.amount.toFixed(2)}` : 'N/A';
+                return `
+                    <tr>
+                        <td><strong>${asset.id}</strong></td>
+                        <td>${asset.name}</td>
+                        <td>${asset.type}</td>
+                        <td>${asset.serialNumber}</td>
+                        <td>${asset.vendor || 'N/A'}</td>
+                        <td>${amountDisplay}</td>
+                        <td>${user ? user.name : 'Not Assigned'}</td>
+                        <td><span class="badge badge-${getStatusBadge(asset.status)}">${asset.status}</span></td>
+                        <td class="action-buttons">
+                            <button class="action-btn action-btn-edit" onclick="openAssetModal('${asset.id}')">
+                                <i class="fas fa-edit"></i> Edit
+                            </button>
+                            <button class="action-btn action-btn-transfer" onclick="openTransferModal('${asset.id}')">
+                                <i class="fas fa-exchange-alt"></i> Transfer
+                            </button>
+                            <button class="action-btn action-btn-delete" onclick="deleteAsset('${asset.id}')">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        async function deleteAsset(assetId) {
+            if (confirm('Are you sure you want to delete this asset?')) {
+                assets = assets.filter(a => a.id !== assetId);
+                await saveAllData();
+                renderAssets();
+                updateDashboard();
+                showToast('Asset deleted successfully', 'success');
+            }
+        }
+
+        function filterAssets() {
+            const searchTerm = document.getElementById('assetSearch').value.toLowerCase();
+            const typeFilter = document.getElementById('assetTypeFilter').value;
+            const statusFilter = document.getElementById('assetStatusFilter').value;
+            
+            const filteredAssets = assets.filter(asset => {
+                const matchesSearch = asset.name.toLowerCase().includes(searchTerm) ||
+                                    asset.serialNumber.toLowerCase().includes(searchTerm) ||
+                                    (asset.model && asset.model.toLowerCase().includes(searchTerm)) ||
+                                    (asset.vendor && asset.vendor.toLowerCase().includes(searchTerm));
+                const matchesType = !typeFilter || asset.type === typeFilter;
+                const matchesStatus = !statusFilter || asset.status === statusFilter;
+                
+                return matchesSearch && matchesType && matchesStatus;
+            });
+            
+            const tbody = document.getElementById('assetsTable');
+            if (filteredAssets.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="9" class="empty-state"><i class="fas fa-search"></i><p>No assets match your filters</p></td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = filteredAssets.map(asset => {
+                const user = asset.assignedTo ? users.find(u => u.id === asset.assignedTo) : null;
+                const amountDisplay = asset.amount ? `${asset.currency} ${asset.amount.toFixed(2)}` : 'N/A';
+                return `
+                    <tr>
+                        <td><strong>${asset.id}</strong></td>
+                        <td>${asset.name}</td>
+                        <td>${asset.type}</td>
+                        <td>${asset.serialNumber}</td>
+                        <td>${asset.vendor || 'N/A'}</td>
+                        <td>${amountDisplay}</td>
+                        <td>${user ? user.name : 'Not Assigned'}</td>
+                        <td><span class="badge badge-${getStatusBadge(asset.status)}">${asset.status}</span></td>
+                        <td class="action-buttons">
+                            <button class="action-btn action-btn-edit" onclick="openAssetModal('${asset.id}')">
+                                <i class="fas fa-edit"></i> Edit
+                            </button>
+                            <button class="action-btn action-btn-transfer" onclick="openTransferModal('${asset.id}')">
+                                <i class="fas fa-exchange-alt"></i> Transfer
+                            </button>
+                            <button class="action-btn action-btn-delete" onclick="deleteAsset('${asset.id}')">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Asset Transfer Functions
+        function openTransferModal(assetId) {
+            const asset = assets.find(a => a.id === assetId);
+            if (!asset) return;
+            
+            const currentUser = asset.assignedTo ? users.find(u => u.id === asset.assignedTo) : null;
+            
+            document.getElementById('transferAssetId').value = asset.id;
+            document.getElementById('transferAssetName').value = asset.name;
+            document.getElementById('transferCurrentUser').value = currentUser ? currentUser.name : 'Not Assigned';
+            
+            // Populate transfer to users (exclude current user)
+            const transferToSelect = document.getElementById('transferToUser');
+            transferToSelect.innerHTML = '<option value="">Select User</option>' + 
+                users.filter(u => u.id !== asset.assignedTo).map(user => 
+                    `<option value="${user.id}">${user.name} (${user.email})</option>`
+                ).join('');
+
+            // Populate transferred by dropdown
+            const transferBySelect = document.getElementById('transferBy');
+            transferBySelect.innerHTML = '<option value="">Select Staff Member</option>' + 
+                users.map(user => 
+                    `<option value="${user.id}">${user.name} (${user.email})</option>`
+                ).join('');
+            
+            document.getElementById('transferForm').reset();
+            document.getElementById('transferAssetId').value = asset.id;
+            document.getElementById('transferAssetName').value = asset.name;
+            document.getElementById('transferCurrentUser').value = currentUser ? currentUser.name : 'Not Assigned';
+            
+            document.getElementById('transferModal').classList.add('active');
+        }
+
+        function closeTransferModal() {
+            document.getElementById('transferModal').classList.remove('active');
+        }
+
+        document.getElementById('transferForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const assetId = document.getElementById('transferAssetId').value;
+            const toUserId = document.getElementById('transferToUser').value;
+            const transferredById = document.getElementById('transferBy').value;
+            const reason = document.getElementById('transferReason').value;
+            
+            const asset = assets.find(a => a.id === assetId);
+            const fromUserId = asset.assignedTo;
+            const transferredBy = users.find(u => u.id === transferredById);
+            
+            // Create transfer record
+            const transfer = {
+                id: 'TRF-' + Date.now(),
+                assetId: assetId,
+                assetName: asset.name,
+                fromUserId: fromUserId,
+                toUserId: toUserId,
+                transferredBy: transferredBy ? transferredBy.name : 'Unknown',
+                transferredById: transferredById,
+                reason: reason,
+                transferDate: new Date().toISOString()
+            };
+            
+            transfers.push(transfer);
+            
+            // Update asset
+            const assetIndex = assets.findIndex(a => a.id === assetId);
+            assets[assetIndex].assignedTo = toUserId;
+            assets[assetIndex].status = 'Assigned';
+            
+            await saveAllData();
+            renderAssets();
+            renderTransferHistory();
+            updateDashboard();
+            closeTransferModal();
+            showToast('Asset transferred successfully', 'success');
+        });
+
+        function renderTransferHistory() {
+            const tbody = document.getElementById('transferHistoryTable');
+            
+            if (transfers.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="empty-state"><i class="fas fa-exchange-alt"></i><p>No transfer history available</p></td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = transfers.slice().reverse().map(transfer => {
+                const fromUser = transfer.fromUserId ? users.find(u => u.id === transfer.fromUserId) : null;
+                const toUser = users.find(u => u.id === transfer.toUserId);
+                
+                return `
+                    <tr>
+                        <td>${new Date(transfer.transferDate).toLocaleString()}</td>
+                        <td><strong>${transfer.assetName}</strong></td>
+                        <td>${fromUser ? fromUser.name : 'Unassigned'}</td>
+                        <td>${toUser ? toUser.name : 'Unknown'}</td>
+                        <td>${transfer.transferredBy}</td>
+                        <td>${transfer.reason}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // User Functions
+        function openUserModal(userId = null) {
+            const modal = document.getElementById('userModal');
+            const form = document.getElementById('userForm');
+            form.reset();
+            
+            if (userId) {
+                const user = users.find(u => u.id === userId);
+                if (user) {
+                    document.getElementById('userModalTitle').innerHTML = '<i class="fas fa-user"></i> Edit User';
+                    document.getElementById('userId').value = user.id;
+                    document.getElementById('userName').value = user.name;
+                    document.getElementById('userEmail').value = user.email;
+                    document.getElementById('userPhone').value = user.phone || '';
+                    document.getElementById('userDepartment').value = user.department;
+                    document.getElementById('userPosition').value = user.position || '';
+                    document.getElementById('userLocation').value = user.location || '';
+                }
+            } else {
+                document.getElementById('userModalTitle').innerHTML = '<i class="fas fa-user"></i> Add User';
+            }
+            
+            modal.classList.add('active');
+        }
+
+        function closeUserModal() {
+            document.getElementById('userModal').classList.remove('active');
+        }
+
+        document.getElementById('userForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const userId = document.getElementById('userId').value;
+            const userData = {
+                name: document.getElementById('userName').value,
+                email: document.getElementById('userEmail').value,
+                phone: document.getElementById('userPhone').value,
+                department: document.getElementById('userDepartment').value,
+                position: document.getElementById('userPosition').value,
+                location: document.getElementById('userLocation').value
+            };
+            
+            if (userId) {
+                const index = users.findIndex(u => u.id === userId);
+                users[index] = { ...users[index], ...userData };
+                showToast('User updated successfully', 'success');
+            } else {
+                const newUser = {
+                    id: 'USR-' + Date.now(),
+                    ...userData,
+                    createdDate: new Date().toISOString()
+                };
+                users.push(newUser);
+                showToast('User added successfully', 'success');
+            }
+            
+            await saveAllData();
+            renderUsers();
+            updateDashboard();
+            populateUserSelects();
+            closeUserModal();
+        });
+
+        function renderUsers() {
+            const tbody = document.getElementById('usersTable');
+            
+            if (users.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" class="empty-state"><i class="fas fa-users"></i><p>No users found. Add your first user!</p></td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = users.map(user => {
+                const userTickets = tickets.filter(t => t.userId === user.id).length;
+                const userAssets = assets.filter(a => a.assignedTo === user.id).length;
+                
+                return `
+                    <tr>
+                        <td><strong>${user.id}</strong></td>
+                        <td>${user.name}</td>
+                        <td>${user.email}</td>
+                        <td>${user.department}</td>
+                        <td>${user.phone || 'N/A'}</td>
+                        <td><span class="badge badge-info">${userTickets}</span></td>
+                        <td><span class="badge badge-success">${userAssets}</span></td>
+                        <td class="action-buttons">
+                            <button class="action-btn action-btn-edit" onclick="openUserModal('${user.id}')">
+                                <i class="fas fa-edit"></i> Edit
+                            </button>
+                            <button class="action-btn action-btn-delete" onclick="deleteUser('${user.id}')">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        async function deleteUser(userId) {
+            const userTickets = tickets.filter(t => t.userId === userId).length;
+            const userAssets = assets.filter(a => a.assignedTo === userId).length;
+            
+            if (userTickets > 0 || userAssets > 0) {
+                if (!confirm(`This user has ${userTickets} tickets and ${userAssets} assets. Are you sure you want to delete?`)) {
+                    return;
+                }
+            } else {
+                if (!confirm('Are you sure you want to delete this user?')) {
+                    return;
+                }
+            }
+            
+            users = users.filter(u => u.id !== userId);
+            await saveAllData();
+            renderUsers();
+            updateDashboard();
+            populateUserSelects();
+            showToast('User deleted successfully', 'success');
+        }
+
+        function filterUsers() {
+            const searchTerm = document.getElementById('userSearch').value.toLowerCase();
+            const departmentFilter = document.getElementById('userDepartmentFilter').value;
+            
+            const filteredUsers = users.filter(user => {
+                const matchesSearch = user.name.toLowerCase().includes(searchTerm) ||
+                                    user.email.toLowerCase().includes(searchTerm) ||
+                                    (user.position && user.position.toLowerCase().includes(searchTerm));
+                const matchesDepartment = !departmentFilter || user.department === departmentFilter;
+                
+                return matchesSearch && matchesDepartment;
+            });
+            
+            const tbody = document.getElementById('usersTable');
+            if (filteredUsers.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" class="empty-state"><i class="fas fa-search"></i><p>No users match your filters</p></td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = filteredUsers.map(user => {
+                const userTickets = tickets.filter(t => t.userId === user.id).length;
+                const userAssets = assets.filter(a => a.assignedTo === user.id).length;
+                
+                return `
+                    <tr>
+                        <td><strong>${user.id}</strong></td>
+                        <td>${user.name}</td>
+                        <td>${user.email}</td>
+                        <td>${user.department}</td>
+                        <td>${user.phone || 'N/A'}</td>
+                        <td><span class="badge badge-info">${userTickets}</span></td>
+                        <td><span class="badge badge-success">${userAssets}</span></td>
+                        <td class="action-buttons">
+                            <button class="action-btn action-btn-edit" onclick="openUserModal('${user.id}')">
+                                <i class="fas fa-edit"></i> Edit
+                            </button>
+                            <button class="action-btn action-btn-delete" onclick="deleteUser('${user.id}')">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Export Functions
+        function exportToCSV(type) {
+            let csvContent = '';
+            let filename = '';
+            
+            switch(type) {
+                case 'tickets':
+                    csvContent = exportTicketsToCSV();
+                    filename = 'tickets_export.csv';
+                    break;
+                case 'assets':
+                    csvContent = exportAssetsToCSV();
+                    filename = 'assets_export.csv';
+                    break;
+                case 'users':
+                    csvContent = exportUsersToCSV();
+                    filename = 'users_export.csv';
+                    break;
+                case 'transfers':
+                    csvContent = exportTransfersToCSV();
+                    filename = 'transfers_export.csv';
+                    break;
+                case 'all':
+                    exportAllData();
+                    return;
+            }
+            
+            downloadCSV(csvContent, filename);
+        }
+
+        function exportTicketsToCSV() {
+            const headers = ['Ticket ID', 'Subject', 'Description', 'User', 'User Email', 'Assigned To', 'Assigned Email', 'Category', 'Priority', 'Status', 'Resolution', 'Created Date', 'Updated Date'];
+            
+            const rows = tickets.map(ticket => {
+                const user = users.find(u => u.id === ticket.userId);
+                const assignedUser = ticket.assignedTo ? users.find(u => u.id === ticket.assignedTo) : null;
+                
+                return [
+                    ticket.id,
+                    escapeCSV(ticket.subject),
+                    escapeCSV(ticket.description),
+                    user ? user.name : 'Unknown',
+                    user ? user.email : '',
+                    assignedUser ? assignedUser.name : 'Unassigned',
+                    assignedUser ? assignedUser.email : '',
+                    ticket.category,
+                    ticket.priority,
+                    ticket.status,
+                    escapeCSV(ticket.resolution || ''),
+                    new Date(ticket.createdDate).toLocaleString(),
+                    new Date(ticket.updatedDate).toLocaleString()
+                ];
+            });
+            
+            return [headers, ...rows].map(row => row.join(',')).join('\n');
+        }
+
+        function exportAssetsToCSV() {
+            const headers = ['Asset ID', 'Name', 'Type', 'Serial Number', 'Model', 'Manufacturer', 'Vendor', 'Amount', 'Currency', 'Purchase Date', 'Warranty Expiry', 'Status', 'Assigned To', 'Assigned Email', 'Notes', 'Created Date'];
+            
+            const rows = assets.map(asset => {
+                const user = asset.assignedTo ? users.find(u => u.id === asset.assignedTo) : null;
+                
+                return [
+                    asset.id,
+                    escapeCSV(asset.name),
+                    asset.type,
+                    asset.serialNumber,
+                    asset.model || '',
+                    asset.manufacturer || '',
+                    asset.vendor || '',
+                    asset.amount || '',
+                    asset.currency || '',
+                    asset.purchaseDate || '',
+                    asset.warrantyExpiry || '',
+                    asset.status,
+                    user ? user.name : 'Not Assigned',
+                    user ? user.email : '',
+                    escapeCSV(asset.notes || ''),
+                    new Date(asset.createdDate).toLocaleString()
+                ];
+            });
+            
+            return [headers, ...rows].map(row => row.join(',')).join('\n');
+        }
+
+        function exportUsersToCSV() {
+            const headers = ['User ID', 'Name', 'Email', 'Phone', 'Department', 'Position', 'Location', 'Total Tickets', 'Total Assets', 'Created Date'];
+            
+            const rows = users.map(user => {
+                const userTickets = tickets.filter(t => t.userId === user.id).length;
+                const userAssets = assets.filter(a => a.assignedTo === user.id).length;
+                
+                return [
+                    user.id,
+                    escapeCSV(user.name),
+                    user.email,
+                    user.phone || '',
+                    user.department,
+                    user.position || '',
+                    user.location || '',
+                    userTickets,
+                    userAssets,
+                    new Date(user.createdDate).toLocaleString()
+                ];
+            });
+            
+            return [headers, ...rows].map(row => row.join(',')).join('\n');
+        }
+
+        function exportTransfersToCSV() {
+            const headers = ['Transfer ID', 'Asset ID', 'Asset Name', 'From User', 'From Email', 'To User', 'To Email', 'Transferred By', 'Reason', 'Transfer Date'];
+            
+            const rows = transfers.map(transfer => {
+                const fromUser = transfer.fromUserId ? users.find(u => u.id === transfer.fromUserId) : null;
+                const toUser = users.find(u => u.id === transfer.toUserId);
+                
+                return [
+                    transfer.id,
+                    transfer.assetId,
+                    escapeCSV(transfer.assetName),
+                    fromUser ? fromUser.name : 'Unassigned',
+                    fromUser ? fromUser.email : '',
+                    toUser ? toUser.name : 'Unknown',
+                    toUser ? toUser.email : '',
+                    escapeCSV(transfer.transferredBy),
+                    escapeCSV(transfer.reason),
+                    new Date(transfer.transferDate).toLocaleString()
+                ];
+            });
+            
+            return [headers, ...rows].map(row => row.join(',')).join('\n');
+        }
+
+        function exportAllData() {
+            const zip = {
+                tickets: exportTicketsToCSV(),
+                assets: exportAssetsToCSV(),
+                users: exportUsersToCSV(),
+                transfers: exportTransfersToCSV()
+            };
+            
+            // Download each file separately
+            downloadCSV(zip.tickets, 'tickets_export.csv');
+            setTimeout(() => downloadCSV(zip.assets, 'assets_export.csv'), 100);
+            setTimeout(() => downloadCSV(zip.users, 'users_export.csv'), 200);
+            setTimeout(() => downloadCSV(zip.transfers, 'transfers_export.csv'), 300);
+            
+            showToast('All data exported successfully', 'success');
+        }
+
+        function escapeCSV(str) {
+            if (str === null || str === undefined) return '';
+            str = String(str);
+            if (str.includes(',') || str.includes('"') || str.includes('\n')) {
+                return '"' + str.replace(/"/g, '""') + '"';
+            }
+            return str;
+        }
+
+        function downloadCSV(content, filename) {
+            const blob = new Blob([content], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            
+            link.setAttribute('href', url);
+            link.setAttribute('download', filename);
+            link.style.visibility = 'hidden';
+            
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // Utility Functions
+        function populateUserSelects() {
+            const ticketUserSelect = document.getElementById('ticketUser');
+            const ticketAssignedSelect = document.getElementById('ticketAssignedTo');
+            const updateAssignedSelect = document.getElementById('updateAssignedTo');
+            const assetAssignSelect = document.getElementById('assetAssignedTo');
+            
+            const userOptions = users.map(user => 
+                `<option value="${user.id}">${user.name} (${user.email})</option>`
+            ).join('');
+            
+            ticketUserSelect.innerHTML = '<option value="">Select User</option>' + userOptions;
+            ticketAssignedSelect.innerHTML = '<option value="">Select Support Staff</option>' + userOptions;
+            updateAssignedSelect.innerHTML = '<option value="">Select Support Staff</option>' + userOptions;
+            assetAssignSelect.innerHTML = '<option value="">Not Assigned</option>' + userOptions;
+        }
+
+        function getStatusBadge(status) {
+            const statusMap = {
+                'Open': 'warning',
+                'In Progress': 'info',
+                'Resolved': 'success',
+                'Closed': 'secondary',
+                'Available': 'success',
+                'Assigned': 'info',
+                'Under Repair': 'warning',
+                'Retired': 'secondary'
+            };
+            return statusMap[status] || 'secondary';
+        }
+
+        function showToast(message, type = 'info') {
+            const toast = document.getElementById('toast');
+            const toastIcon = document.getElementById('toastIcon');
+            const toastMessage = document.getElementById('toastMessage');
+            
+            const icons = {
+                success: 'fas fa-check-circle',
+                error: 'fas fa-exclamation-circle',
+                info: 'fas fa-info-circle'
+            };
+            
+            toast.className = `toast ${type}`;
+            toastIcon.className = icons[type] || icons.info;
+            toastMessage.textContent = message;
+            
+            toast.classList.add('active');
+            
+            setTimeout(() => {
+                toast.classList.remove('active');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
